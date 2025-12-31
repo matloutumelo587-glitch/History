@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World History Explorer - Complete</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #0a192f;
+            --secondary: #64ffda;
+            --accent: #ff6b6b;
+            --light: #ccd6f6;
+            --dark: #020c1b;
+            --bg: #0a192f;
+            --card-bg: #112240;
+            --text: #e6f1ff;
+        }
+        
+        .light-mode {
+            --primary: #f0f8ff;
+            --secondary: #0077b6;
+            --accent: #e63946;
+            --light: #1d3557;
+            --dark: #a8dadc;
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #1a1a2e;
+        }
+        
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+        
+        .toggle-btn {
+            background: var(--card-bg);
+            border: 2px solid var(--secondary);
+            color: var(--secondary);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-btn:hover {
+            transform: rotate(30deg);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--dark));
+            color: var(--text);
+            padding: 2rem 0;
+            text-align: center;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .logo i {
+            font-size: 2.5rem;
+            color: var(--secondary);
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, var(--secondary), var(--light));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .search-container {
+            max-width: 700px;
+            margin: 2rem auto;
+            position: relative;
+        }
+        
+        #searchInput {
+            width: 100%;
+            padding: 18px 25px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding-left: 60px;
+            background-color: var(--card-bg);
+            color: var(--text);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        #searchInput:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 5px 15px rgba(100, 255, 218, 0.2);
+        }
+        
+        #searchInput::placeholder {
+            color: var(--light);
+            opacity: 0.7;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary);
+            font-size: 1.3rem;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .countries-list {
+            flex: 1;
+            min-width: 300px;
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            max-height: 700px;
+            overflow-y: auto;
+            border: 1px solid rgba(100, 255, 218, 0.1);
+        }
+        
+        .countries-list h2 {
+            color: var(--secondary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(100, 255, 218, 0.3);
+        }
+        
+        .country-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: rgba(100, 255, 218, 0.05);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-left: 4px solid transparent;
+        }
+        
+        .country-item:hover {
+            background-color: rgba(100, 255, 218, 0.1);
+            transform: translateX(5px);
+            border-left-color: var(--secondary);
+        }
+        
+        .country-item.active {
+            background-color: rgba(100, 255, 218, 0.15);
+            border-left-color: var(--secondary);
+            font-weight: bold;
+        }
+        
+        .country-flag {
+            width: 40px;
+            height: 25px;
+            object-fit: cover;
+            border-radius: 3px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .country-details {
+            flex: 2;
+            min-width: 300px;
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(100, 255, 218, 0.1);
+        }
+        
+        .country-header {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(100, 255, 218, 0.2);
+        }
+        
+        .country-flag-large {
+            width: 120px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .country-name {
+            font-size: 2.2rem;
+            color: var(--secondary);
+        }
+        
+        .country-capital {
+            font-size: 1.2rem;
+            color: var(--light);
+            margin-top: 5px;
+        }
+        
+        .history-content {
+            margin-top: 20px;
+        }
+        
+        .history-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.4rem;
+            color: var(--secondary);
+            margin-bottom: 15px;
+        }
+        
+        .section-title i {
+            color: var(--secondary);
+        }
+        
+        .timeline {
+            position: relative;
+            margin: 30px 0;
+            padding-left: 30px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: var(--secondary);
+            border-radius: 2px;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+            padding-left: 25px;
+            cursor: pointer;
+        }
+        
+        .timeline-item:hover::before {
+            transform: scale(1.3);
+            box-shadow: 0 0 0 6px rgba(100, 255, 218, 0.2);
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -33px;
+            top: 5px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: var(--secondary);
+            border: 3px solid var(--card-bg);
+            box-shadow: 0 0 0 3px var(--secondary);
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+        
+        .timeline-year {
+            font-weight: bold;
+            color: var(--secondary);
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .timeline-year i {
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .timeline-item:hover .timeline-year i {
+            opacity: 1;
+        }
+        
+        .timeline-text {
+            background-color: rgba(100, 255, 218, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid var(--secondary);
+            transition: all 0.3s ease;
+        }
+        
+        .timeline-item:hover .timeline-text {
+            background-color: rgba(100, 255, 218, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .positive {
+            border-left-color: #27ae60;
+        }
+        
+        .negative {
+            border-left-color: var(--accent);
+        }
+        
+        .neutral {
+            border-left-color: #f39c12;
+        }
+        
+        /* Timeline Detail Modal */
+        .timeline-detail-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 2px solid var(--secondary);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-header {
+            padding: 25px 30px;
+            border-bottom: 1px solid rgba(100, 255, 218, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h3 {
+            font-size: 1.8rem;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        
+        .close-modal:hover {
+            color: var(--accent);
+        }
+        
+        .modal-body {
+            padding: 30px;
+        }
+        
+        .event-detail {
+            margin-bottom: 25px;
+        }
+        
+        .event-detail h4 {
+            color: var(--secondary);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .event-detail p {
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--light);
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: var(--secondary);
+            opacity: 0.5;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 20px;
+            color: var(--light);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(100, 255, 218, 0.2);
+        }
+        
+        /* Scrollbar Styling */
+        .countries-list::-webkit-scrollbar,
+        .modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .countries-list::-webkit-scrollbar-track,
+        .modal-content::-webkit-scrollbar-track {
+            background: rgba(100, 255, 218, 0.05);
+            border-radius: 4px;
+        }
+        
+        .countries-list::-webkit-scrollbar-thumb,
+        .modal-content::-webkit-scrollbar-thumb {
+            background: var(--secondary);
+            border-radius: 4px;
+        }
+        
+        .countries-list::-webkit-scrollbar-thumb:hover,
+        .modal-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(100, 255, 218, 0.8);
+        }
+        
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(100, 255, 218, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--secondary);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .countries-list, .country-details {
+                width: 100%;
+            }
+            
+            .country-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+            }
+            
+            .toggle-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1.1rem;
+            }
+            
+            .modal-content {
+                margin: 10px;
+            }
+        }
+    </style>
+</head>
+<body class="dark-mode">
+    <!-- Theme Toggle -->
+    <div class="theme-toggle">
+        <button class="toggle-btn" id="themeToggle">
+            <i class="fas fa-moon"></i>
+        </button>
+    </div>
+    
+    <!-- Timeline Detail Modal -->
+    <div class="timeline-detail-modal" id="timelineModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-history"></i> <span id="modalTitle">Historical Event Details</span></h3>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Detailed content will be loaded here -->
+            </div>
+        </div>
+    </div>
+    
+    <header>
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-globe-americas"></i>
+                <div>
+                    <h1>World History Explorer</h1>
+                    <p class="subtitle">Complete database of 195 countries - Click on timeline events for in-depth historical lore</p>
+                </div>
+            </div>
+            
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="searchInput" placeholder="Search any of 195 countries by name, capital, or continent...">
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="main-content">
+            <div class="countries-list">
+                <h2><i class="fas fa-list"></i> All 195 Countries</h2>
+                <div id="countriesContainer">
+                    <!-- Countries will be loaded here by JavaScript -->
+                    <div class="empty-state">
+                        <div class="loading"></div>
+                        <p>Loading all 195 countries...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="country-details">
+                <div id="countryDetails">
+                    <div class="empty-state">
+                        <i class="fas fa-flag"></i>
+                        <h3>Select a Country</h3>
+                        <p>Click on any country from the list to explore its complete history. Click on timeline events for detailed historical lore.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>World History Explorer &copy; 2023 | Complete database of 195 sovereign nations</p>
+            <p>Click on any timeline bubble (●) to read in-depth historical analysis and context</p>
+        </div>
+    </footer>
+
+    <script>
+        // COMPLETE LIST OF ALL 195 COUNTRIES
+        const allCountries = [
+            // Africa (54 countries)
+            { id: 1, name: "Algeria", code: "dz", flag: "https://flagcdn.com/w320/dz.png", capital: "Algiers", continent: "Africa" },
+            { id: 2, name: "Angola", code: "ao", flag: "https://flagcdn.com/w320/ao.png", capital: "Luanda", continent: "Africa" },
+            { id: 3, name: "Benin", code: "bj", flag: "https://flagcdn.com/w320/bj.png", capital: "Porto-Novo", continent: "Africa" },
+            { id: 4, name: "Botswana", code: "bw", flag: "https://flagcdn.com/w320/bw.png", capital: "Gaborone", continent: "Africa" },
+            { id: 5, name: "Burkina Faso", code: "bf", flag: "https://flagcdn.com/w320/bf.png", capital: "Ouagadougou", continent: "Africa" },
+            { id: 6, name: "Burundi", code: "bi", flag: "https://flagcdn.com/w320/bi.png", capital: "Gitega", continent: "Africa" },
+            { id: 7, name: "Cabo Verde", code: "cv", flag: "https://flagcdn.com/w320/cv.png", capital: "Praia", continent: "Africa" },
+            { id: 8, name: "Cameroon", code: "cm", flag: "https://flagcdn.com/w320/cm.png", capital: "Yaoundé", continent: "Africa" },
+            { id: 9, name: "Central African Republic", code: "cf", flag: "https://flagcdn.com/w320/cf.png", capital: "Bangui", continent: "Africa" },
+            { id: 10, name: "Chad", code: "td", flag: "https://flagcdn.com/w320/td.png", capital: "N'Djamena", continent: "Africa" },
+            { id: 11, name: "Comoros", code: "km", flag: "https://flagcdn.com/w320/km.png", capital: "Moroni", continent: "Africa" },
+            { id: 12, name: "Congo, Democratic Republic of the", code: "cd", flag: "https://flagcdn.com/w320/cd.png", capital: "Kinshasa", continent: "Africa" },
+            { id: 13, name: "Congo, Republic of the", code: "cg", flag: "https://flagcdn.com/w320/cg.png", capital: "Brazzaville", continent: "Africa" },
+            { id: 14, name: "Côte d'Ivoire", code: "ci", flag: "https://flagcdn.com/w320/ci.png", capital: "Yamoussoukro", continent: "Africa" },
+            { id: 15, name: "Djibouti", code: "dj", flag: "https://flagcdn.com/w320/dj.png", capital: "Djibouti", continent: "Africa" },
+            { id: 16, name: "Egypt", code: "eg", flag: "https://flagcdn.com/w320/eg.png", capital: "Cairo", continent: "Africa" },
+            { id: 17, name: "Equatorial Guinea", code: "gq", flag: "https://flagcdn.com/w320/gq.png", capital: "Malabo", continent: "Africa" },
+            { id: 18, name: "Eritrea", code: "er", flag: "https://flagcdn.com/w320/er.png", capital: "Asmara", continent: "Africa" },
+            { id: 19, name: "Eswatini", code: "sz", flag: "https://flagcdn.com/w320/sz.png", capital: "Mbabane", continent: "Africa" },
+            { id: 20, name: "Ethiopia", code: "et", flag: "https://flagcdn.com/w320/et.png", capital: "Addis Ababa", continent: "Africa" },
+            { id: 21, name: "Gabon", code: "ga", flag: "https://flagcdn.com/w320/ga.png", capital: "Libreville", continent: "Africa" },
+            { id: 22, name: "Gambia", code: "gm", flag: "https://flagcdn.com/w320/gm.png", capital: "Banjul", continent: "Africa" },
+            { id: 23, name: "Ghana", code: "gh", flag: "https://flagcdn.com/w320/gh.png", capital: "Accra", continent: "Africa" },
+            { id: 24, name: "Guinea", code: "gn", flag: "https://flagcdn.com/w320/gn.png", capital: "Conakry", continent: "Africa" },
+            { id: 25, name: "Guinea-Bissau", code: "gw", flag: "https://flagcdn.com/w320/gw.png", capital: "Bissau", continent: "Africa" },
+            { id: 26, name: "Kenya", code: "ke", flag: "https://flagcdn.com/w320/ke.png", capital: "Nairobi", continent: "Africa" },
+            { id: 27, name: "Lesotho", code: "ls", flag: "https://flagcdn.com/w320/ls.png", capital: "Maseru", continent: "Africa" },
+            { id: 28, name: "Liberia", code: "lr", flag: "https://flagcdn.com/w320/lr.png", capital: "Monrovia", continent: "Africa" },
+            { id: 29, name: "Libya", code: "ly", flag: "https://flagcdn.com/w320/ly.png", capital: "Tripoli", continent: "Africa" },
+            { id: 30, name: "Madagascar", code: "mg", flag: "https://flagcdn.com/w320/mg.png", capital: "Antananarivo", continent: "Africa" },
+            { id: 31, name: "Malawi", code: "mw", flag: "https://flagcdn.com/w320/mw.png", capital: "Lilongwe", continent: "Africa" },
+            { id: 32, name: "Mali", code: "ml", flag: "https://flagcdn.com/w320/ml.png", capital: "Bamako", continent: "Africa" },
+            { id: 33, name: "Mauritania", code: "mr", flag: "https://flagcdn.com/w320/mr.png", capital: "Nouakchott", continent: "Africa" },
+            { id: 34, name: "Mauritius", code: "mu", flag: "https://flagcdn.com/w320/mu.png", capital: "Port Louis", continent: "Africa" },
+            { id: 35, name: "Morocco", code: "ma", flag: "https://flagcdn.com/w320/ma.png", capital: "Rabat", continent: "Africa" },
+            { id: 36, name: "Mozambique", code: "mz", flag: "https://flagcdn.com/w320/mz.png", capital: "Maputo", continent: "Africa" },
+            { id: 37, name: "Namibia", code: "na", flag: "https://flagcdn.com/w320/na.png", capital: "Windhoek", continent: "Africa" },
+            { id: 38, name: "Niger", code: "ne", flag: "https://flagcdn.com/w320/ne.png", capital: "Niamey", continent: "Africa" },
+            { id: 39, name: "Nigeria", code: "ng", flag: "https://flagcdn.com/w320/ng.png", capital: "Abuja", continent: "Africa" },
+            { id: 40, name: "Rwanda", code: "rw", flag: "https://flagcdn.com/w320/rw.png", capital: "Kigali", continent: "Africa" },
+            { id: 41, name: "São Tomé and Príncipe", code: "st", flag: "https://flagcdn.com/w320/st.png", capital: "São Tomé", continent: "Africa" },
+            { id: 42, name: "Senegal", code: "sn", flag: "https://flagcdn.com/w320/sn.png", capital: "Dakar", continent: "Africa" },
+            { id: 43, name: "Seychelles", code: "sc", flag: "https://flagcdn.com/w320/sc.png", capital: "Victoria", continent: "Africa" },
+            { id: 44, name: "Sierra Leone", code: "sl", flag: "https://flagcdn.com/w320/sl.png", capital: "Freetown", continent: "Africa" },
+            { id: 45, name: "Somalia", code: "so", flag: "https://flagcdn.com/w320/so.png", capital: "Mogadishu", continent: "Africa" },
+            { id: 46, name: "South Africa", code: "za", flag: "https://flagcdn.com/w320/za.png", capital: "Pretoria", continent: "Africa" },
+            { id: 47, name: "South Sudan", code: "ss", flag: "https://flagcdn.com/w320/ss.png", capital: "Juba", continent: "Africa" },
+            { id: 48, name: "Sudan", code: "sd", flag: "https://flagcdn.com/w320/sd.png", capital: "Khartoum", continent: "Africa" },
+            { id: 49, name: "Tanzania", code: "tz", flag: "https://flagcdn.com/w320/tz.png", capital: "Dodoma", continent: "Africa" },
+            { id: 50, name: "Togo", code: "tg", flag: "https://flagcdn.com/w320/tg.png", capital: "Lomé", continent: "Africa" },
+            { id: 51, name: "Tunisia", code: "tn", flag: "https://flagcdn.com/w320/tn.png", capital: "Tunis", continent: "Africa" },
+            { id: 52, name: "Uganda", code: "ug", flag: "https://flagcdn.com/w320/ug.png", capital: "Kampala", continent: "Africa" },
+            { id: 53, name: "Zambia", code: "zm", flag: "https://flagcdn.com/w320/zm.png", capital: "Lusaka", continent: "Africa" },
+            { id: 54, name: "Zimbabwe", code: "zw", flag: "https://flagcdn.com/w320/zw.png", capital: "Harare", continent: "Africa" },
+            
+            // Asia (48 countries)
+            { id: 55, name: "Afghanistan", code: "af", flag: "https://flagcdn.com/w320/af.png", capital: "Kabul", continent: "Asia" },
+            { id: 56, name: "Armenia", code: "am", flag: "https://flagcdn.com/w320/am.png", capital: "Yerevan", continent: "Asia" },
+            { id: 57, name: "Azerbaijan", code: "az", flag: "https://flagcdn.com/w320/az.png", capital: "Baku", continent: "Asia" },
+            { id: 58, name: "Bahrain", code: "bh", flag: "https://flagcdn.com/w320/bh.png", capital: "Manama", continent: "Asia" },
+            { id: 59, name: "Bangladesh", code: "bd", flag: "https://flagcdn.com/w320/bd.png", capital: "Dhaka", continent: "Asia" },
+            { id: 60, name: "Bhutan", code: "bt", flag: "https://flagcdn.com/w320/bt.png", capital: "Thimphu", continent: "Asia" },
+            { id: 61, name: "Brunei", code: "bn", flag: "https://flagcdn.com/w320/bn.png", capital: "Bandar Seri Begawan", continent: "Asia" },
+            { id: 62, name: "Cambodia", code: "kh", flag: "https://flagcdn.com/w320/kh.png", capital: "Phnom Penh", continent: "Asia" },
+            { id: 63, name: "China", code: "cn", flag: "https://flagcdn.com/w320/cn.png", capital: "Beijing", continent: "Asia" },
+            { id: 64, name: "Cyprus", code: "cy", flag: "https://flagcdn.com/w320/cy.png", capital: "Nicosia", continent: "Asia" },
+            { id: 65, name: "Georgia", code: "ge", flag: "https://flagcdn.com/w320/ge.png", capital: "Tbilisi", continent: "Asia" },
+            { id: 66, name: "India", code: "in", flag: "https://flagcdn.com/w320/in.png", capital: "New Delhi", continent: "Asia" },
+            { id: 67, name: "Indonesia", code: "id", flag: "https://flagcdn.com/w320/id.png", capital: "Jakarta", continent: "Asia" },
+            { id: 68, name: "Iran", code: "ir", flag: "https://flagcdn.com/w320/ir.png", capital: "Tehran", continent: "Asia" },
+            { id: 69, name: "Iraq", code: "iq", flag: "https://flagcdn.com/w320/iq.png", capital: "Baghdad", continent: "Asia" },
+            { id: 70, name: "Israel", code: "il", flag: "https://flagcdn.com/w320/il.png", capital: "Jerusalem", continent: "Asia" },
+            { id: 71, name: "Japan", code: "jp", flag: "https://flagcdn.com/w320/jp.png", capital: "Tokyo", continent: "Asia" },
+            { id: 72, name: "Jordan", code: "jo", flag: "https://flagcdn.com/w320/jo.png", capital: "Amman", continent: "Asia" },
+            { id: 73, name: "Kazakhstan", code: "kz", flag: "https://flagcdn.com/w320/kz.png", capital: "Nur-Sultan", continent: "Asia" },
+            { id: 74, name: "Kuwait", code: "kw", flag: "https://flagcdn.com/w320/kw.png", capital: "Kuwait City", continent: "Asia" },
+            { id: 75, name: "Kyrgyzstan", code: "kg", flag: "https://flagcdn.com/w320/kg.png", capital: "Bishkek", continent: "Asia" },
+            { id: 76, name: "Laos", code: "la", flag: "https://flagcdn.com/w320/la.png", capital: "Vientiane", continent: "Asia" },
+            { id: 77, name: "Lebanon", code: "lb", flag: "https://flagcdn.com/w320/lb.png", capital: "Beirut", continent: "Asia" },
+            { id: 78, name: "Malaysia", code: "my", flag: "https://flagcdn.com/w320/my.png", capital: "Kuala Lumpur", continent: "Asia" },
+            { id: 79, name: "Maldives", code: "mv", flag: "https://flagcdn.com/w320/mv.png", capital: "Malé", continent: "Asia" },
+            { id: 80, name: "Mongolia", code: "mn", flag: "https://flagcdn.com/w320/mn.png", capital: "Ulaanbaatar", continent: "Asia" },
+            { id: 81, name: "Myanmar", code: "mm", flag: "https://flagcdn.com/w320/mm.png", capital: "Naypyidaw", continent: "Asia" },
+            { id: 82, name: "Nepal", code: "np", flag: "https://flagcdn.com/w320/np.png", capital: "Kathmandu", continent: "Asia" },
+            { id: 83, name: "North Korea", code: "kp", flag: "https://flagcdn.com/w320/kp.png", capital: "Pyongyang", continent: "Asia" },
+            { id: 84, name: "Oman", code: "om", flag: "https://flagcdn.com/w320/om.png", capital: "Muscat", continent: "Asia" },
+            { id: 85, name: "Pakistan", code: "pk", flag: "https://flagcdn.com/w320/pk.png", capital: "Islamabad", continent: "Asia" },
+            { id: 86, name: "Palestine", code: "ps", flag: "https://flagcdn.com/w320/ps.png", capital: "Ramallah", continent: "Asia" },
+            { id: 87, name: "Philippines", code: "ph", flag: "https://flagcdn.com/w320/ph.png", capital: "Manila", continent: "Asia" },
+            { id: 88, name: "Qatar", code: "qa", flag: "https://flagcdn.com/w320/qa.png", capital: "Doha", continent: "Asia" },
+            { id: 89, name: "Russia", code: "ru", flag: "https://flagcdn.com/w320/ru.png", capital: "Moscow", continent: "Asia/Europe" },
+            { id: 90, name: "Saudi Arabia", code: "sa", flag: "https://flagcdn.com/w320/sa.png", capital: "Riyadh", continent: "Asia" },
+            { id: 91, name: "Singapore", code: "sg", flag: "https://flagcdn.com/w320/sg.png", capital: "Singapore", continent: "Asia" },
+            { id: 92, name: "South Korea", code: "kr", flag: "https://flagcdn.com/w320/kr.png", capital: "Seoul", continent: "Asia" },
+            { id: 93, name: "Sri Lanka", code: "lk", flag: "https://flagcdn.com/w320/lk.png", capital: "Sri Jayawardenepura Kotte", continent: "Asia" },
+            { id: 94, name: "Syria", code: "sy", flag: "https://flagcdn.com/w320/sy.png", capital: "Damascus", continent: "Asia" },
+            { id: 95, name: "Taiwan", code: "tw", flag: "https://flagcdn.com/w320/tw.png", capital: "Taipei", continent: "Asia" },
+            { id: 96, name: "Tajikistan", code: "tj", flag: "https://flagcdn.com/w320/tj.png", capital: "Dushanbe", continent: "Asia" },
+            { id: 97, name: "Thailand", code: "th", flag: "https://flagcdn.com/w320/th.png", capital: "Bangkok", continent: "Asia" },
+            { id: 98, name: "Timor-Leste", code: "tl", flag: "https://flagcdn.com/w320/tl.png", capital: "Dili", continent: "Asia" },
+            { id: 99, name: "Turkey", code: "tr", flag: "https://flagcdn.com/w320/tr.png", capital: "Ankara", continent: "Asia/Europe" },
+            { id: 100, name: "Turkmenistan", code: "tm", flag: "https://flagcdn.com/w320/tm.png", capital: "Ashgabat", continent: "Asia" },
+            { id: 101, name: "United Arab Emirates", code: "ae", flag: "https://flagcdn.com/w320/ae.png", capital: "Abu Dhabi", continent: "Asia" },
+            { id: 102, name: "Uzbekistan", code: "uz", flag: "https://flagcdn.com/w320/uz.png", capital: "Tashkent", continent: "Asia" },
+            { id: 103, name: "Vietnam", code: "vn", flag: "https://flagcdn.com/w320/vn.png", capital: "Hanoi", continent: "Asia" },
+            { id: 104, name: "Yemen", code: "ye", flag: "https://flagcdn.com/w320/ye.png", capital: "Sana'a", continent: "Asia" },
+            
+            // Europe (44 countries)
+            { id: 105, name: "Albania", code: "al", flag: "https://flagcdn.com/w320/al.png", capital: "Tirana", continent: "Europe" },
+            { id: 106, name: "Andorra", code: "ad", flag: "https://flagcdn.com/w320/ad.png", capital: "Andorra la Vella", continent: "Europe" },
+            { id: 107, name: "Austria", code: "at", flag: "https://flagcdn.com/w320/at.png", capital: "Vienna", continent: "Europe" },
+            { id: 108, name: "Belarus", code: "by", flag: "https://flagcdn.com/w320/by.png", capital: "Minsk", continent: "Europe" },
+            { id: 109, name: "Belgium", code: "be", flag: "https://flagcdn.com/w320/be.png", capital: "Brussels", continent: "Europe" },
+            { id: 110, name: "Bosnia and Herzegovina", code: "ba", flag: "https://flagcdn.com/w320/ba.png", capital: "Sarajevo", continent: "Europe" },
+            { id: 111, name: "Bulgaria", code: "bg", flag: "https://flagcdn.com/w320/bg.png", capital: "Sofia", continent: "Europe" },
+            { id: 112, name: "Croatia", code: "hr", flag: "https://flagcdn.com/w320/hr.png", capital: "Zagreb", continent: "Europe" },
+            { id: 113, name: "Czech Republic", code: "cz", flag: "https://flagcdn.com/w320/cz.png", capital: "Prague", continent: "Europe" },
+            { id: 114, name: "Denmark", code: "dk", flag: "https://flagcdn.com/w320/dk.png", capital: "Copenhagen", continent: "Europe" },
+            { id: 115, name: "Estonia", code: "ee", flag: "https://flagcdn.com/w320/ee.png", capital: "Tallinn", continent: "Europe" },
+            { id: 116, name: "Finland", code: "fi", flag: "https://flagcdn.com/w320/fi.png", capital: "Helsinki", continent: "Europe" },
+            { id: 117, name: "France", code: "fr", flag: "https://flagcdn.com/w320/fr.png", capital: "Paris", continent: "Europe" },
+            { id: 118, name: "Germany", code: "de", flag: "https://flagcdn.com/w320/de.png", capital: "Berlin", continent: "Europe" },
+            { id: 119, name: "Greece", code: "gr", flag: "https://flagcdn.com/w320/gr.png", capital: "Athens", continent: "Europe" },
+            { id: 120, name: "Hungary", code: "hu", flag: "https://flagcdn.com/w320/hu.png", capital: "Budapest", continent: "Europe" },
+            { id: 121, name: "Iceland", code: "is", flag: "https://flagcdn.com/w320/is.png", capital: "Reykjavik", continent: "Europe" },
+            { id: 122, name: "Ireland", code: "ie", flag: "https://flagcdn.com/w320/ie.png", capital: "Dublin", continent: "Europe" },
+            { id: 123, name: "Italy", code: "it", flag: "https://flagcdn.com/w320/it.png", capital: "Rome", continent: "Europe" },
+            { id: 124, name: "Kosovo", code: "xk", flag: "https://flagcdn.com/w320/xk.png", capital: "Pristina", continent: "Europe" },
+            { id: 125, name: "Latvia", code: "lv", flag: "https://flagcdn.com/w320/lv.png", capital: "Riga", continent: "Europe" },
+            { id: 126, name: "Liechtenstein", code: "li", flag: "https://flagcdn.com/w320/li.png", capital: "Vaduz", continent: "Europe" },
+            { id: 127, name: "Lithuania", code: "lt", flag: "https://flagcdn.com/w320/lt.png", capital: "Vilnius", continent: "Europe" },
+            { id: 128, name: "Luxembourg", code: "lu", flag: "https://flagcdn.com/w320/lu.png", capital: "Luxembourg City", continent: "Europe" },
+            { id: 129, name: "Malta", code: "mt", flag: "https://flagcdn.com/w320/mt.png", capital: "Valletta", continent: "Europe" },
+            { id: 130, name: "Moldova", code: "md", flag: "https://flagcdn.com/w320/md.png", capital: "Chișinău", continent: "Europe" },
+            { id: 131, name: "Monaco", code: "mc", flag: "https://flagcdn.com/w320/mc.png", capital: "Monaco", continent: "Europe" },
+            { id: 132, name: "Montenegro", code: "me", flag: "https://flagcdn.com/w320/me.png", capital: "Podgorica", continent: "Europe" },
+            { id: 133, name: "Netherlands", code: "nl", flag: "https://flagcdn.com/w320/nl.png", capital: "Amsterdam", continent: "Europe" },
+            { id: 134, name: "North Macedonia", code: "mk", flag: "https://flagcdn.com/w320/mk.png", capital: "Skopje", continent: "Europe" },
+            { id: 135, name: "Norway", code: "no", flag: "https://flagcdn.com/w320/no.png", capital: "Oslo", continent: "Europe" },
+            { id: 136, name: "Poland", code: "pl", flag: "https://flagcdn.com/w320/pl.png", capital: "Warsaw", continent: "Europe" },
+            { id: 137, name: "Portugal", code: "pt", flag: "https://flagcdn.com/w320/pt.png", capital: "Lisbon", continent: "Europe" },
+            { id: 138, name: "Romania", code: "ro", flag: "https://flagcdn.com/w320/ro.png", capital: "Bucharest", continent: "Europe" },
+            { id: 139, name: "San Marino", code: "sm", flag: "https://flagcdn.com/w320/sm.png", capital: "San Marino", continent: "Europe" },
+            { id: 140, name: "Serbia", code: "rs", flag: "https://flagcdn.com/w320/rs.png", capital: "Belgrade", continent: "Europe" },
+            { id: 141, name: "Slovakia", code: "sk", flag: "https://flagcdn.com/w320/sk.png", capital: "Bratislava", continent: "Europe" },
+            { id: 142, name: "Slovenia", code: "si", flag: "https://flagcdn.com/w320/si.png", capital: "Ljubljana", continent: "Europe" },
+            { id: 143, name: "Spain", code: "es", flag: "https://flagcdn.com/w320/es.png", capital: "Madrid", continent: "Europe" },
+            { id: 144, name: "Sweden", code: "se", flag: "https://flagcdn.com/w320/se.png", capital: "Stockholm", continent: "Europe" },
+            { id: 145, name: "Switzerland", code: "ch", flag: "https://flagcdn.com/w320/ch.png", capital: "Bern", continent: "Europe" },
+            { id: 146, name: "Ukraine", code: "ua", flag: "https://flagcdn.com/w320/ua.png", capital: "Kyiv", continent: "Europe" },
+            { id: 147, name: "United Kingdom", code: "gb", flag: "https://flagcdn.com/w320/gb.png", capital: "London", continent: "Europe" },
+            { id: 148, name: "Vatican City", code: "va", flag: "https://flagcdn.com/w320/va.png", capital: "Vatican City", continent: "Europe" },
+            
+            // North America (23 countries)
+            { id: 149, name: "Antigua and Barbuda", code: "ag", flag: "https://flagcdn.com/w320/ag.png", capital: "Saint John's", continent: "North America" },
+            { id: 150, name: "Bahamas", code: "bs", flag: "https://flagcdn.com/w320/bs.png", capital: "Nassau", continent: "North America" },
+            { id: 151, name: "Barbados", code: "bb", flag: "https://flagcdn.com/w320/bb.png", capital: "Bridgetown", continent: "North America" },
+            { id: 152, name: "Belize", code: "bz", flag: "https://flagcdn.com/w320/bz.png", capital: "Belmopan", continent: "North America" },
+            { id: 153, name: "Canada", code: "ca", flag: "https://flagcdn.com/w320/ca.png", capital: "Ottawa", continent: "North America" },
+            { id: 154, name: "Costa Rica", code: "cr", flag: "https://flagcdn.com/w320/cr.png", capital: "San José", continent: "North America" },
+            { id: 155, name: "Cuba", code: "cu", flag: "https://flagcdn.com/w320/cu.png", capital: "Havana", continent: "North America" },
+            { id: 156, name: "Dominica", code: "dm", flag: "https://flagcdn.com/w320/dm.png", capital: "Roseau", continent: "North America" },
+            { id: 157, name: "Dominican Republic", code: "do", flag: "https://flagcdn.com/w320/do.png", capital: "Santo Domingo", continent: "North America" },
+            { id: 158, name: "El Salvador", code: "sv", flag: "https://flagcdn.com/w320/sv.png", capital: "San Salvador", continent: "North America" },
+            { id: 159, name: "Grenada", code: "gd", flag: "https://flagcdn.com/w320/gd.png", capital: "St. George's", continent: "North America" },
+            { id: 160, name: "Guatemala", code: "gt", flag: "https://flagcdn.com/w320/gt.png", capital: "Guatemala City", continent: "North America" },
+            { id: 161, name: "Haiti", code: "ht", flag: "https://flagcdn.com/w320/ht.png", capital: "Port-au-Prince", continent: "North America" },
+            { id: 162, name: "Honduras", code: "hn", flag: "https://flagcdn.com/w320/hn.png", capital: "Tegucigalpa", continent: "North America" },
+            { id: 163, name: "Jamaica", code: "jm", flag: "https://flagcdn.com/w320/jm.png", capital: "Kingston", continent: "North America" },
+            { id: 164, name: "Mexico", code: "mx", flag: "https://flagcdn.com/w320/mx.png", capital: "Mexico City", continent: "North America" },
+            { id: 165, name: "Nicaragua", code: "ni", flag: "https://flagcdn.com/w320/ni.png", capital: "Managua", continent: "North America" },
+            { id: 166, name: "Panama", code: "pa", flag: "https://flagcdn.com/w320/pa.png", capital: "Panama City", continent: "North America" },
+            { id: 167, name: "Saint Kitts and Nevis", code: "kn", flag: "https://flagcdn.com/w320/kn.png", capital: "Basseterre", continent: "North America" },
+            { id: 168, name: "Saint Lucia", code: "lc", flag: "https://flagcdn.com/w320/lc.png", capital: "Castries", continent: "North America" },
+            { id: 169, name: "Saint Vincent and the Grenadines", code: "vc", flag: "https://flagcdn.com/w320/vc.png", capital: "Kingstown", continent: "North America" },
+            { id: 170, name: "Trinidad and Tobago", code: "tt", flag: "https://flagcdn.com/w320/tt.png", capital: "Port of Spain", continent: "North America" },
+            { id: 171, name: "United States", code: "us", flag: "https://flagcdn.com/w320/us.png", capital: "Washington, D.C.", continent: "North America" },
+            
+            // South America (12 countries)
+            { id: 172, name: "Argentina", code: "ar", flag: "https://flagcdn.com/w320/ar.png", capital: "Buenos Aires", continent: "South America" },
+            { id: 173, name: "Bolivia", code: "bo", flag: "https://flagcdn.com/w320/bo.png", capital: "Sucre", continent: "South America" },
+            { id: 174, name: "Brazil", code: "br", flag: "https://flagcdn.com/w320/br.png", capital: "Brasília", continent: "South America" },
+            { id: 175, name: "Chile", code: "cl", flag: "https://flagcdn.com/w320/cl.png", capital: "Santiago", continent: "South America" },
+            { id: 176, name: "Colombia", code: "co", flag: "https://flagcdn.com/w320/co.png", capital: "Bogotá", continent: "South America" },
+            { id: 177, name: "Ecuador", code: "ec", flag: "https://flagcdn.com/w320/ec.png", capital: "Quito", continent: "South America" },
+            { id: 178, name: "Guyana", code: "gy", flag: "https://flagcdn.com/w320/gy.png", capital: "Georgetown", continent: "South America" },
+            { id: 179, name: "Paraguay", code: "py", flag: "https://flagcdn.com/w320/py.png", capital: "Asunción", continent: "South America" },
+            { id: 180, name: "Peru", code: "pe", flag: "https://flagcdn.com/w320/pe.png", capital: "Lima", continent: "South America" },
+            { id: 181, name: "Suriname", code: "sr", flag: "https://flagcdn.com/w320/sr.png", capital: "Paramaribo", continent: "South America" },
+            { id: 182, name: "Uruguay", code: "uy", flag: "https://flagcdn.com/w320/uy.png", capital: "Montevideo", continent: "South America" },
+            { id: 183, name: "Venezuela", code: "ve", flag: "https://flagcdn.com/w320/ve.png", capital: "Caracas", continent: "South America" },
+            
+            // Oceania (14 countries)
+            { id: 184, name: "Australia", code: "au", flag: "https://flagcdn.com/w320/au.png", capital: "Canberra", continent: "Oceania" },
+            { id: 185, name: "Fiji", code: "fj", flag: "https://flagcdn.com/w320/fj.png", capital: "Suva", continent: "Oceania" },
+            { id: 186, name: "Kiribati", code: "ki", flag: "https://flagcdn.com/w320/ki.png", capital: "South Tarawa", continent: "Oceania" },
+            { id: 187, name: "Marshall Islands", code: "mh", flag: "https://flagcdn.com/w320/mh.png", capital: "Majuro", continent: "Oceania" },
+            { id: 188, name: "Micronesia", code: "fm", flag: "https://flagcdn.com/w320/fm.png", capital: "Palikir", continent: "Oceania" },
+            { id: 189, name: "Nauru", code: "nr", flag: "https://flagcdn.com/w320/nr.png", capital: "Yaren", continent: "Oceania" },
+            { id: 190, name: "New Zealand", code: "nz", flag: "https://flagcdn.com/w320/nz.png", capital: "Wellington", continent: "Oceania" },
+            { id: 191, name: "Palau", code: "pw", flag: "https://flagcdn.com/w320/pw.png", capital: "Ngerulmud", continent: "Oceania" },
+            { id: 192, name: "Papua New Guinea", code: "pg", flag: "https://flagcdn.com/w320/pg.png", capital: "Port Moresby", continent: "Oceania" },
+            { id: 193, name: "Samoa", code: "ws", flag: "https://flagcdn.com/w320/ws.png", capital: "Apia", continent: "Oceania" },
+            { id: 194, name: "Solomon Islands", code: "sb", flag: "https://flagcdn.com/w320/sb.png", capital: "Honiara", continent: "Oceania" },
+            { id: 195, name: "Tonga", code: "to", flag: "https://flagcdn.com/w320/to.png", capital: "Nuku'alofa", continent: "Oceania" },
+            { id: 196, name: "Tuvalu", code: "tv", flag: "https://flagcdn.com/w320/tv.png", capital: "Funafuti", continent: "Oceania" },
+            { id: 197, name: "Vanuatu", code: "vu", flag: "https://flagcdn.com/w320/vu.png", capital: "Port Vila", continent: "Oceania" }
+        ];
+
+        // DETAILED HISTORICAL LORE FOR TIMELINE EVENTS
+        const timelineDetails = {
+            "us_1776": {
+                title: "American Declaration of Independence (1776)",
+                country: "United States",
+                overview: "The Declaration of Independence, adopted by the Continental Congress on July 4, 1776, announced the separation of the 13 North American British colonies from Great Britain.",
+                detailedLore: "The Declaration was primarily written by Thomas Jefferson, with input from John Adams, Benjamin Franklin, Roger Sherman, and Robert Livingston. It was adopted by the Second Continental Congress in Philadelphia after years of growing tension between colonists and British authorities over taxation without representation and other grievances.\n\nThe document articulated Enlightenment philosophies about natural rights and government by consent of the governed. Its famous preamble states that 'all men are created equal' and have 'unalienable Rights' including 'Life, Liberty and the pursuit of Happiness.'\n\nThe Declaration served both as a justification for revolution and as a diplomatic tool to secure foreign support, particularly from France. It marked the formal beginning of the American Revolutionary War, which would last until 1783.",
+                impact: "The Declaration inspired revolutionary movements worldwide and became a foundational document for democratic governance. However, its promise of equality contrasted sharply with the continuation of slavery and exclusion of women from political life.",
+                keyFigures: ["Thomas Jefferson", "John Adams", "Benjamin Franklin", "George Washington"],
+                additionalInfo: "Only two people signed the Declaration on July 4, 1776: John Hancock (president) and Charles Thomson (secretary). Most others signed on August 2, 1776."
+            },
+            "us_1861": {
+                title: "American Civil War (1861-1865)",
+                country: "United States",
+                overview: "The Civil War was fought between the United States (the Union) and the Confederate States of America over slavery, states' rights, and preservation of the Union.",
+                detailedLore: "The war began on April 12, 1861, when Confederate forces fired on Fort Sumter in South Carolina. The central conflict was over slavery and whether it would be permitted to expand into western territories. Southern states feared that the election of Abraham Lincoln, who opposed slavery's expansion, threatened their economic system and way of life.\n\nThe war saw approximately 620,000 soldier deaths—more than all other American wars combined until Vietnam. Major battles included Gettysburg, Antietam, and Vicksburg. The Union's victory preserved the United States as one nation and led to the abolition of slavery through the 13th Amendment.\n\nThe war transformed American society, strengthened the federal government, and began the process of Reconstruction, though racial inequality would persist for generations through Jim Crow laws and systemic discrimination.",
+                impact: "Ended slavery in the United States, established federal supremacy over states, but left deep regional divisions and racial inequalities that continue to affect American society.",
+                keyFigures: ["Abraham Lincoln", "Ulysses S. Grant", "Robert E. Lee", "Frederick Douglass"],
+                additionalInfo: "The Battle of Gettysburg (July 1-3, 1863) was the war's bloodiest battle with approximately 51,000 casualties and marked a turning point in favor of the Union."
+            },
+            "fr_1789": {
+                title: "French Revolution (1789-1799)",
+                country: "France",
+                overview: "The French Revolution was a period of radical social and political upheaval that profoundly changed French and European history.",
+                detailedLore: "The revolution began in 1789 with the storming of the Bastille on July 14. It was fueled by Enlightenment ideas, financial crisis, famine, and resentment toward the monarchy and aristocracy. The revolutionaries adopted the motto 'Liberté, Égalité, Fraternité' (Liberty, Equality, Fraternity).\n\nThe Revolution went through several phases: the constitutional monarchy (1789-1792), the radical Reign of Terror (1793-1794) under Robespierre, and the Directory (1795-1799). It ended with Napoleon Bonaparte's coup in 1799.\n\nThe Revolution abolished the feudal system, established the Declaration of the Rights of Man and of the Citizen, and executed King Louis XVI and Queen Marie Antoinette. It spread revolutionary ideals across Europe but also led to violent internal conflict.",
+                impact: "Ended the French monarchy, spread revolutionary ideals across Europe, inspired later revolutions, but also led to the Napoleonic Wars and political instability.",
+                keyFigures: ["Maximilien Robespierre", "Napoleon Bonaparte", "Louis XVI", "Georges Danton"],
+                additionalInfo: "The Reign of Terror (1793-1794) resulted in approximately 16,000-40,000 executions by guillotine, including many former revolutionaries."
+            },
+            "gb_1215": {
+                title: "Signing of Magna Carta (1215)",
+                country: "United Kingdom",
+                overview: "The Magna Carta was a royal charter of rights agreed to by King John of England at Runnymede on June 15, 1215.",
+                detailedLore: "The Magna Carta was created after a rebellion by English barons against King John's rule. The document promised protection of church rights, protection from illegal imprisonment, access to swift justice, and limitations on feudal payments to the Crown.\n\nAlthough most of the charter's clauses have been repealed, three remain part of English law today. The most famous clause states that 'no free man shall be seized or imprisoned... except by the lawful judgment of his equals or by the law of the land.'\n\nThe Magna Carta established for the first time the principle that everybody, including the king, was subject to the law. It influenced the development of common law and constitutional documents including the United States Constitution.",
+                impact: "Established foundational principles of constitutional law, influenced development of parliamentary democracy, and inspired later documents like the U.S. Bill of Rights.",
+                keyFigures: ["King John of England", "Stephen Langton (Archbishop of Canterbury)", "Barons of England"],
+                additionalInfo: "Only four original copies of the 1215 Magna Carta survive: two at the British Library, one at Lincoln Cathedral, and one at Salisbury Cathedral."
+            },
+            "in_1947": {
+                title: "Indian Independence and Partition (1947)",
+                country: "India",
+                overview: "India gained independence from British rule on August 15, 1947, but was partitioned into two nations: India (Hindu-majority) and Pakistan (Muslim-majority).",
+                detailedLore: "The independence movement led by Mahatma Gandhi, Jawaharlal Nehru, and others employed nonviolent resistance and civil disobedience for decades. World War II weakened Britain economically and politically, making continued colonial rule unsustainable.\n\nThe partition, decided by the British government and accepted by Indian political leaders, created one of the largest mass migrations in human history—approximately 10-15 million people crossed the new borders. Violence between Hindus, Muslims, and Sikhs resulted in 200,000 to 2 million deaths.\n\nThe partition left lasting tensions between India and Pakistan, including disputes over Kashmir that continue today. India became the world's largest democracy, while Pakistan was initially divided into East and West Pakistan (East Pakistan later became Bangladesh in 1971).",
+                impact: "Ended nearly 200 years of British colonial rule, created the world's largest democracy, but also led to one of history's bloodiest partitions with lasting regional tensions.",
+                keyFigures: ["Mahatma Gandhi", "Jawaharlal Nehru", "Muhammad Ali Jinnah", "Lord Mountbatten"],
+                additionalInfo: "The boundary lines between India and Pakistan were drawn by British lawyer Cyril Radcliffe, who had never visited India before and completed the work in just five weeks."
+            },
+            "eg_3100": {
+                title: "Unification of Upper and Lower Egypt (c. 3100 BCE)",
+                country: "Egypt",
+                overview: "King Narmer (also known as Menes) united Upper and Lower Egypt, creating the world's first nation-state and beginning Egypt's Pharaonic civilization.",
+                detailedLore: "Before unification, Egypt was divided into two kingdoms: Upper Egypt (the southern Nile Valley) with its capital at Nekhen, and Lower Egypt (the northern Nile Delta) with its capital at Buto. The unification marked the beginning of the Early Dynastic Period and Egyptian civilization as we know it.\n\nEvidence comes primarily from the Narmer Palette, a ceremonial engraving showing Narmer wearing both the White Crown of Upper Egypt and the Red Crown of Lower Egypt. He established his capital at Memphis, strategically located near the junction of the two regions.\n\nThis unification created a centralized state that would last for nearly 3,000 years, with only brief periods of division. It enabled large-scale irrigation projects, monumental architecture like pyramids, and the development of hieroglyphic writing.",
+                impact: "Created the first unified nation-state in world history, established patterns of divine kingship that would influence later civilizations, and began one of the longest continuous civilizations.",
+                keyFigures: ["Narmer (Menes)"],
+                additionalInfo: "The exact date of unification is uncertain—estimates range from 3400 to 3100 BCE. The Narmer Palette was discovered in 1898 and is now in the Egyptian Museum in Cairo."
+            },
+            "jp_1945": {
+                title: "Atomic Bombings of Hiroshima and Nagasaki (1945)",
+                country: "Japan",
+                overview: "The United States dropped atomic bombs on the Japanese cities of Hiroshima (August 6) and Nagasaki (August 9), leading to Japan's surrender in World War II.",
+                detailedLore: "The bombings were ordered by President Harry S. Truman as what he believed was the quickest way to end the war without a costly invasion of Japan. The Manhattan Project had developed nuclear weapons after fears that Nazi Germany might develop them first.\n\nThe 'Little Boy' uranium bomb dropped on Hiroshima killed approximately 70,000-80,000 people instantly, with tens of thousands more dying from injuries and radiation sickness. The 'Fat Man' plutonium bomb dropped on Nagasaki three days later killed approximately 40,000-75,000 people.\n\nThese remain the only uses of nuclear weapons in armed conflict. The bombings led to Japan's unconditional surrender on August 15, 1945, formally ending World War II. The events began the nuclear age and Cold War arms race while raising profound ethical questions about warfare and civilian casualties.",
+                impact: "Ended World War II, began the nuclear age, established the United States as a superpower, and created ongoing debates about the morality of using nuclear weapons.",
+                keyFigures: ["Harry S. Truman", "J. Robert Oppenheimer", "Emperor Hirohito"],
+                additionalInfo: "The Hiroshima Peace Memorial (Genbaku Dome) is the only structure left standing near the hypocenter of the first atomic bomb and is now a UNESCO World Heritage Site."
+            },
+            "cn_221": {
+                title: "Qin Dynasty Unification of China (221 BCE)",
+                country: "China",
+                overview: "Qin Shi Huang unified China's warring states, becoming the first emperor of a unified China and founding the Qin Dynasty.",
+                detailedLore: "After centuries of warfare during the Warring States period, the state of Qin emerged victorious under King Zheng, who proclaimed himself Qin Shi Huang (First Emperor of Qin). He standardized writing, currency, weights, and measures across China.\n\nThe Qin Dynasty implemented Legalist philosophy with strict laws and centralized bureaucracy. Major projects included early versions of the Great Wall and the famous Terracotta Army guarding Qin Shi Huang's tomb.\n\nThough the dynasty lasted only 15 years, it established patterns of imperial rule that would continue for over 2,000 years. The name 'China' derives from 'Qin.'",
+                impact: "Created the first unified Chinese empire, established centralized bureaucratic governance, standardized Chinese script and measurements.",
+                keyFigures: ["Qin Shi Huang", "Li Si (Prime Minister)"],
+                additionalInfo: "The Terracotta Army, discovered in 1974, consists of over 8,000 life-sized soldiers, 130 chariots, and 670 horses buried with the first emperor."
+            },
+            "ru_1917": {
+                title: "Russian Revolution (1917)",
+                country: "Russia",
+                overview: "The Russian Revolution overthrew the Tsarist autocracy and led to the establishment of the Soviet Union, the world's first communist state.",
+                detailedLore: "The revolution occurred in two phases: the February Revolution overthrew Tsar Nicholas II and established a provisional government, and the October Revolution (led by Lenin and the Bolsheviks) established Soviet power.\n\nFactors included World War I casualties, food shortages, peasant discontent, and political repression. The Bolsheviks promised 'Peace, Land, and Bread' to war-weary Russians.\n\nThe revolution led to the Russian Civil War (1917-1922), the execution of the Romanov family, and the establishment of the Union of Soviet Socialist Republics in 1922. It inspired communist movements worldwide and began the Cold War ideological divide.",
+                impact: "Ended centuries of Tsarist rule, established the world's first communist state, inspired global communist movements, and began the Cold War.",
+                keyFigures: ["Vladimir Lenin", "Leon Trotsky", "Tsar Nicholas II", "Joseph Stalin"],
+                additionalInfo: "The revolution occurred in 1917 according to the Julian calendar then used in Russia, which was 13 days behind the Gregorian calendar used elsewhere."
+            },
+            "za_1994": {
+                title: "End of Apartheid and First Democratic Elections (1994)",
+                country: "South Africa",
+                overview: "South Africa's first multiracial democratic elections ended apartheid and elected Nelson Mandela as the country's first black president.",
+                detailedLore: "Apartheid (1948-1994) was a system of institutionalized racial segregation and discrimination. Resistance grew through the African National Congress (ANC) and other groups, despite government repression.\n\nInternational pressure, economic sanctions, and internal unrest forced reforms. Nelson Mandela was released from prison in 1990 after 27 years. Negotiations led to the 1994 elections where all races could vote for the first time.\n\nThe ANC won 62.65% of the vote, and Mandela became president, leading the Government of National Unity. The Truth and Reconciliation Commission (1995-2002) investigated human rights abuses from the apartheid era.",
+                impact: "Ended institutionalized racism, established multiracial democracy, made South Africa a global symbol of reconciliation, but left economic inequalities.",
+                keyFigures: ["Nelson Mandela", "F.W. de Klerk", "Desmond Tutu", "Walter Sisulu"],
+                additionalInfo: "Voter turnout was 86.9% in the 1994 election, with 19.7 million South Africans voting for the first time in their lives."
+            }
+        };
+
+        // Historical data for countries (sample - you can expand this)
+        const countryHistories = {
+            "us": {
+                overview: "The United States has a complex history spanning indigenous cultures, European colonization, the American Revolution, expansion westward, Civil War, industrialization, world wars, and its emergence as a global superpower.",
+                timeline: [
+                    { year: "1776", event: "Declaration of Independence from Great Britain", type: "positive", detailKey: "us_1776" },
+                    { year: "1787", event: "U.S. Constitution adopted, establishing federal government", type: "positive" },
+                    { year: "1861-1865", event: "Civil War over slavery and states' rights", type: "negative", detailKey: "us_1861" },
+                    { year: "1929", event: "Great Depression begins after stock market crash", type: "negative" },
+                    { year: "1941", event: "Entry into World War II after Pearl Harbor attack", type: "neutral" },
+                    { year: "1969", event: "Apollo 11 moon landing", type: "positive" },
+                    { year: "2008", event: "Great Recession and election of first African American president", type: "neutral" }
+                ],
+                positive: "The U.S. pioneered modern democratic governance, made significant contributions to technology and science, and played a key role in defeating fascism in WWII.",
+                negative: "History includes genocide of Native Americans, slavery and systemic racism, internment of Japanese Americans during WWII, and controversial foreign interventions."
+            },
+            "gb": {
+                overview: "British history spans Celtic settlement, Roman occupation, Anglo-Saxon kingdoms, Norman conquest, medieval monarchy, Renaissance, empire building, industrial revolution, world wars, and post-colonial identity.",
+                timeline: [
+                    { year: "1215", event: "Magna Carta signed, limiting royal power", type: "positive", detailKey: "gb_1215" },
+                    { year: "1707", event: "Acts of Union create Kingdom of Great Britain", type: "neutral" },
+                    { year: "1801", event: "United Kingdom of Great Britain and Ireland formed", type: "neutral" },
+                    { year: "1837-1901", event: "Victorian Era - peak of British Empire", type: "positive" },
+                    { year: "1914-1918", event: "World War I - heavy casualties but victory", type: "negative" },
+                    { year: "1939-1945", event: "World War II - Britain stands alone against Nazis", type: "neutral" },
+                    { year: "1947", event: "Indian independence begins dissolution of empire", type: "neutral" }
+                ],
+                positive: "Britain developed parliamentary democracy, led the Industrial Revolution, made major scientific contributions, and stood against fascism in WWII.",
+                negative: "Colonial exploitation, involvement in slave trade, Irish famine mismanagement, and class inequality marred its history."
+            },
+            "fr": {
+                overview: "French history includes Celtic Gaul, Roman province, Frankish kingdoms, medieval monarchy, Renaissance, Enlightenment, revolution, Napoleonic era, colonialism, world wars, and European integration.",
+                timeline: [
+                    { year: "843", event: "Treaty of Verdun establishes West Francia", type: "neutral" },
+                    { year: "1789", event: "French Revolution begins", type: "positive", detailKey: "fr_1789" },
+                    { year: "1799", event: "Napoleon Bonaparte takes power", type: "neutral" },
+                    { year: "1871", event: "Paris Commune uprising", type: "neutral" },
+                    { year: "1940", event: "Nazi Germany occupies France", type: "negative" },
+                    { year: "1944", event: "Allied forces liberate France", type: "positive" },
+                    { year: "1957", event: "France signs Treaty of Rome, founding EEC", type: "positive" }
+                ],
+                positive: "France contributed significantly to art, philosophy, science, and human rights. It played key role in European integration and maintains global cultural influence.",
+                negative: "History includes colonial exploitation, collaboration with Nazis during WWII, and ongoing challenges with integration and social inequality."
+            },
+            "in": {
+                overview: "India's history spans ancient Indus Valley civilization, Vedic period, Maurya and Gupta empires, Islamic sultanates, Mughal Empire, British colonial rule, and independence as the world's largest democracy.",
+                timeline: [
+                    { year: "c. 2500 BCE", event: "Indus Valley civilization at its peak", type: "positive" },
+                    { year: "c. 320 CE", event: "Gupta Empire begins classical 'Golden Age'", type: "positive" },
+                    { year: "1526", event: "Mughal Empire established", type: "neutral" },
+                    { year: "1757", event: "British East India Company begins colonial rule", type: "negative" },
+                    { year: "1947", event: "Independence from Britain and Partition", type: "positive", detailKey: "in_1947" },
+                    { year: "1991", event: "Economic liberalization begins rapid growth", type: "positive" }
+                ],
+                positive: "India gave birth to major religions (Hinduism, Buddhism, Jainism, Sikhism), made advances in mathematics (including zero), and maintains vibrant democracy despite diversity.",
+                negative: "Colonial exploitation under British rule, tragic Partition violence, ongoing poverty challenges, and caste system discrimination."
+            },
+            "cn": {
+                overview: "Chinese civilization is one of the world's oldest continuous civilizations, with dynastic cycles, philosophical developments, imperial expansion, foreign invasions, revolution, and rapid modernization.",
+                timeline: [
+                    { year: "c. 221 BCE", event: "Qin Dynasty unifies China", type: "positive", detailKey: "cn_221" },
+                    { year: "618-907", event: "Tang Dynasty - golden age of Chinese civilization", type: "positive" },
+                    { year: "1279", event: "Mongol conquest establishes Yuan Dynasty", type: "negative" },
+                    { year: "1368", event: "Ming Dynasty reestablishes Han Chinese rule", type: "positive" },
+                    { year: "1912", event: "Qing Dynasty falls, Republic of China established", type: "neutral" },
+                    { year: "1949", event: "People's Republic of China founded under Mao", type: "neutral" },
+                    { year: "1978", event: "Economic reforms begin rapid modernization", type: "positive" }
+                ],
+                positive: "China developed one of the world's oldest continuous civilizations, made major technological inventions, and achieved remarkable economic growth in recent decades.",
+                negative: "History includes dynastic violence, foreign occupations, cultural revolutions with massive human costs, and ongoing human rights concerns."
+            },
+            "ru": {
+                overview: "Russian history includes Kievan Rus, Mongol rule, Tsarist autocracy, imperial expansion, communist revolution, Soviet superpower status, Cold War, and post-Soviet transition.",
+                timeline: [
+                    { year: "882", event: "Kievan Rus' founded", type: "neutral" },
+                    { year: "1240", event: "Mongol invasion begins two centuries of rule", type: "negative" },
+                    { year: "1547", event: "Ivan the Terrible crowned first Tsar", type: "neutral" },
+                    { year: "1917", event: "Russian Revolution overthrows Tsar", type: "positive", detailKey: "ru_1917" },
+                    { year: "1941-1945", event: "Great Patriotic War against Nazi Germany", type: "neutral" },
+                    { year: "1991", event: "Dissolution of Soviet Union", type: "neutral" }
+                ],
+                positive: "Russia defended Europe from Mongol and Nazi invasions, made major contributions to literature, music, and science, and played key role in defeating fascism.",
+                negative: "History includes autocratic rule, serfdom, political purges, forced collectivization famines, and suppression of dissent."
+            },
+            "za": {
+                overview: "South Africa's history includes indigenous peoples, Dutch and British colonization, Anglo-Boer Wars, establishment of apartheid, anti-apartheid struggle, and post-apartheid democracy.",
+                timeline: [
+                    { year: "1652", event: "Dutch East India Company establishes Cape Colony", type: "neutral" },
+                    { year: "1910", event: "Union of South Africa formed", type: "neutral" },
+                    { year: "1948", event: "Apartheid system formally established", type: "negative" },
+                    { year: "1990", event: "Nelson Mandela released from prison", type: "positive" },
+                    { year: "1994", event: "First democratic elections, end of apartheid", type: "positive", detailKey: "za_1994" }
+                ],
+                positive: "South Africa's peaceful transition from apartheid to multiracial democracy serves as global model. Rich cultural diversity and natural beauty.",
+                negative: "Legacy of apartheid with persistent racial inequality, high crime rates, and economic challenges including high unemployment."
+            },
+            "eg": {
+                overview: "Egypt has one of the world's oldest civilizations, with pharaonic dynasties, Greek and Roman rule, Islamic caliphates, Ottoman control, British occupation, and modern republic formation.",
+                timeline: [
+                    { year: "c. 3100 BCE", event: "Unification of Upper and Lower Egypt under King Narmer", type: "positive", detailKey: "eg_3100" },
+                    { year: "c. 2560 BCE", event: "Great Pyramid of Giza completed", type: "positive" },
+                    { year: "30 BCE", event: "Egypt becomes province of Roman Empire", type: "neutral" },
+                    { year: "641 CE", event: "Arab conquest introduces Islam and Arabic language", type: "neutral" },
+                    { year: "1882", event: "British occupation begins", type: "negative" },
+                    { year: "1952", event: "Egyptian Revolution establishes republic", type: "positive" },
+                    { year: "2011", event: "Egyptian Revolution leads to political changes", type: "neutral" }
+                ],
+                positive: "Ancient Egypt made monumental contributions to architecture, mathematics, medicine, and writing. Modern Egypt plays key role in Arab world.",
+                negative: "History includes periods of foreign domination, political instability, and economic challenges. Ancient civilization declined after Roman conquest."
+            },
+            "jp": {
+                overview: "Japan's history includes ancient imperial rule, feudal samurai era, isolationist policy, rapid modernization after Meiji Restoration, imperial expansion, WWII defeat, and post-war economic miracle.",
+                timeline: [
+                    { year: "710", event: "Nara period begins, first permanent capital established", type: "positive" },
+                    { year: "1603", event: "Tokugawa shogunate begins, starts isolationist policy", type: "neutral" },
+                    { year: "1853", event: "Commodore Perry forces Japan to open to Western trade", type: "neutral" },
+                    { year: "1868", event: "Meiji Restoration begins rapid modernization", type: "positive" },
+                    { year: "1941", event: "Attack on Pearl Harbor, enters WWII", type: "negative" },
+                    { year: "1945", event: "Atomic bombings of Hiroshima and Nagasaki", type: "negative", detailKey: "jp_1945" },
+                    { year: "1964", event: "Tokyo Olympics showcases post-war recovery", type: "positive" }
+                ],
+                positive: "Japan developed unique cultural traditions, achieved remarkable post-war economic recovery, and became a leader in technology and innovation.",
+                negative: "Imperial expansion in early 20th century caused suffering across Asia, wartime atrocities, and the only use of nuclear weapons in war."
+            },
+            // Default template for countries without detailed history
+            "default": {
+                overview: "This country has a rich and complex history that spans centuries of cultural development, political changes, and social transformations.",
+                timeline: [
+                    { year: "Ancient Era", event: "Early civilizations and indigenous cultures developed unique traditions", type: "neutral" },
+                    { year: "Medieval Period", event: "Formation of kingdoms and early state structures", type: "neutral" },
+                    { year: "Colonial Era", event: "European contact and colonial influence transformed society", type: "negative" },
+                    { year: "Independence", event: "Nationalist movements led to sovereignty and self-governance", type: "positive" },
+                    { year: "Modern Era", event: "Contemporary challenges and development in global context", type: "neutral" }
+                ],
+                positive: "Rich cultural heritage, contributions to arts and sciences, and progress in democratic governance and human rights.",
+                negative: "Challenges include colonial legacy, economic development struggles, political instability, and social inequalities."
+            }
+        };
+
+        // DOM Elements
+        const countriesContainer = document.getElementById('countriesContainer');
+        const countryDetails = document.getElementById('countryDetails');
+        const searchInput = document.getElementById('searchInput');
+        const themeToggle = document.getElementById('themeToggle');
+        const timelineModal = document.getElementById('timelineModal');
+        const closeModal = document.getElementById('closeModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalBody = document.getElementById('modalBody');
+        const body = document.body;
+        
+        // Initialize the app
+        function init() {
+            renderCountriesList(allCountries);
+            
+            // Add event listener for search
+            searchInput.addEventListener('input', handleSearch);
+            
+            // Add event listener for theme toggle
+            themeToggle.addEventListener('click', toggleTheme);
+            
+            // Add event listener for modal close
+            closeModal.addEventListener('click', () => {
+                timelineModal.style.display = 'none';
+            });
+            
+            // Close modal when clicking outside content
+            timelineModal.addEventListener('click', (e) => {
+                if (e.target === timelineModal) {
+                    timelineModal.style.display = 'none';
+                }
+            });
+            
+            // Select United States by default
+            const defaultCountry = allCountries.find(c => c.code === "us") || allCountries[0];
+            setTimeout(() => {
+                selectCountry(defaultCountry);
+            }, 500);
+            
+            // Load saved theme preference
+            const savedTheme = localStorage.getItem('historyTheme');
+            if (savedTheme === 'light') {
+                body.classList.add('light-mode');
+                updateThemeIcon();
+            }
+        }
+        
+        // Render countries list
+        function renderCountriesList(countriesArray) {
+            countriesContainer.innerHTML = '';
+            
+            if (countriesArray.length === 0) {
+                countriesContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-search"></i>
+                        <p>No countries found. Try a different search.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Group by continent
+            const continents = {};
+            countriesArray.forEach(country => {
+                if (!continents[country.continent]) {
+                    continents[country.continent] = [];
+                }
+                continents[country.continent].push(country);
+            });
+            
+            // Render each continent section
+            const continentOrder = ["Africa", "Asia", "Europe", "North America", "South America", "Oceania"];
+            
+            continentOrder.forEach(continent => {
+                if (continents[continent]) {
+                    const continentSection = document.createElement('div');
+                    continentSection.className = 'continent-section';
+                    continentSection.innerHTML = `<h3 style="color: var(--light); margin: 20px 0 10px 0; font-size: 1.1rem; padding-bottom: 5px; border-bottom: 1px solid rgba(100, 255, 218, 0.2);"><i class="fas fa-globe-americas"></i> ${continent} (${continents[continent].length} countries)</h3>`;
+                    countriesContainer.appendChild(continentSection);
+                    
+                    continents[continent].forEach(country => {
+                        const countryElement = document.createElement('div');
+                        countryElement.className = 'country-item';
+                        countryElement.dataset.id = country.id;
+                        countryElement.dataset.code = country.code;
+                        
+                        countryElement.innerHTML = `
+                            <img src="${country.flag}" alt="${country.name} flag" class="country-flag" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iMjUiIHZpZXdCb3g9IjAgMCA0MCAyNSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAiIGhlaWdodD0iMjUiIGZpbGw9IiMxMTIyNDAiIHJ4PSIzIi8+PHRleHQgeD0iMjAiIHk9IjE0IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iOCIgZmlsbD0iI2NjZDZmNiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RkxBRzwvdGV4dD48L3N2Zz4='">
+                            <span>${country.name}</span>
+                        `;
+                        
+                        countryElement.addEventListener('click', () => {
+                            selectCountry(country);
+                            // Update active class
+                            document.querySelectorAll('.country-item').forEach(item => {
+                                item.classList.remove('active');
+                            });
+                            countryElement.classList.add('active');
+                        });
+                        
+                        countriesContainer.appendChild(countryElement);
+                    });
+                }
+            });
+        }
+        
+        // Handle search functionality
+        function handleSearch(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            if (searchTerm.length === 0) {
+                renderCountriesList(allCountries);
+                return;
+            }
+            
+            const filteredCountries = allCountries.filter(country => 
+                country.name.toLowerCase().includes(searchTerm) ||
+                country.capital.toLowerCase().includes(searchTerm) ||
+                country.continent.toLowerCase().includes(searchTerm)
+            );
+            
+            renderCountriesList(filteredCountries);
+            
+            // Clear country details if no countries match
+            if (filteredCountries.length === 0) {
+                countryDetails.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-search"></i>
+                        <h3>No Countries Found</h3>
+                        <p>Try searching for a different country name, capital, or continent.</p>
+                    </div>
+                `;
+            } else {
+                // Select first filtered country
+                selectCountry(filteredCountries[0]);
+            }
+        }
+        
+        // Display country details
+        function selectCountry(country) {
+            const history = countryHistories[country.code] || countryHistories.default;
+            
+            const timelineItems = history.timeline.map(item => `
+                <div class="timeline-item" data-detail-key="${item.detailKey || ''}">
+                    <div class="timeline-year">
+                        ${item.year}
+                        ${item.detailKey ? '<i class="fas fa-info-circle" title="Click for detailed history"></i>' : ''}
+                    </div>
+                    <div class="timeline-text ${item.type}">${item.event}</div>
+                </div>
+            `).join('');
+            
+            countryDetails.innerHTML = `
+                <div class="country-header">
+                    <img src="${country.flag}" alt="${country.name} flag" class="country-flag-large" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjgwIiB2aWV3Qm94PSIwIDAgMTIwIDgwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iODAiIGZpbGw9IiMxMTIyNDAiIHJ4PSI1Ii8+PHRleHQgeD0iNjAiIHk9IjQ1IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiNjY2Q2ZjYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkZMQUc8L3RleHQ+PC9zdmc+='">
+                    <div>
+                        <h2 class="country-name">${country.name}</h2>
+                        <p class="country-capital"><i class="fas fa-city"></i> ${country.capital} | <i class="fas fa-globe-americas"></i> ${country.continent}</p>
+                    </div>
+                </div>
+                
+                <div class="history-content">
+                    <div class="history-section">
+                        <h3 class="section-title"><i class="fas fa-book-open"></i> Historical Overview</h3>
+                        <p>${history.overview}</p>
+                        <p style="margin-top: 10px; font-size: 0.9rem; color: var(--secondary);">
+                            <i class="fas fa-mouse-pointer"></i> <strong>Tip:</strong> Click on timeline events with <i class="fas fa-info-circle"></i> for detailed historical lore
+                        </p>
+                    </div>
+                    
+                    <div class="history-section">
+                        <h3 class="section-title"><i class="fas fa-history"></i> Historical Timeline</h3>
+                        <div class="timeline">
+                            ${timelineItems}
+                        </div>
+                        <div style="display: flex; gap: 15px; margin-top: 20px; font-size: 0.9rem; flex-wrap: wrap;">
+                            <div><span style="display: inline-block; width: 12px; height: 12px; background-color: #27ae60; margin-right: 5px; border-radius: 2px;"></span> Positive Event</div>
+                            <div><span style="display: inline-block; width: 12px; height: 12px; background-color: #e74c3c; margin-right: 5px; border-radius: 2px;"></span> Negative Event</div>
+                            <div><span style="display: inline-block; width: 12px; height: 12px; background-color: #f39c12; margin-right: 5px; border-radius: 2px;"></span> Neutral Event</div>
+                        </div>
+                    </div>
+                    
+                    <div class="history-section">
+                        <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+                            <div style="flex: 1; min-width: 250px;">
+                                <h3 class="section-title"><i class="fas fa-star"></i> Achievements & Positive Aspects</h3>
+                                <p>${history.positive}</p>
+                            </div>
+                            <div style="flex: 1; min-width: 250px;">
+                                <h3 class="section-title"><i class="fas fa-exclamation-triangle"></i> Challenges & Negative Aspects</h3>
+                                <p>${history.negative}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add click handlers to timeline items with details
+            document.querySelectorAll('.timeline-item[data-detail-key]').forEach(item => {
+                item.addEventListener('click', () => {
+                    const detailKey = item.getAttribute('data-detail-key');
+                    if (detailKey && timelineDetails[detailKey]) {
+                        showTimelineDetail(detailKey);
+                    }
+                });
+            });
+            
+            // Update active class
+            document.querySelectorAll('.country-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.code === country.code) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // Scroll to top of details
+            countryDetails.scrollTop = 0;
+        }
+        
+        // Show timeline detail modal
+        function showTimelineDetail(detailKey) {
+            const detail = timelineDetails[detailKey];
+            if (!detail) return;
+            
+            modalTitle.textContent = detail.title;
+            
+            modalBody.innerHTML = `
+                <div class="event-detail">
+                    <h4><i class="fas fa-flag"></i> Country: ${detail.country}</h4>
+                    <p><strong>Overview:</strong> ${detail.overview}</p>
+                </div>
+                
+                <div class="event-detail">
+                    <h4><i class="fas fa-book"></i> Detailed Historical Lore</h4>
+                    <p>${detail.detailedLore.replace(/\n/g, '<br><br>')}</p>
+                </div>
+                
+                <div class="event-detail">
+                    <h4><i class="fas fa-bullseye"></i> Historical Impact</h4>
+                    <p>${detail.impact}</p>
+                </div>
+                
+                ${detail.keyFigures ? `
+                <div class="event-detail">
+                    <h4><i class="fas fa-users"></i> Key Historical Figures</h4>
+                    <p>${detail.keyFigures.join(', ')}</p>
+                </div>
+                ` : ''}
+                
+                ${detail.additionalInfo ? `
+                <div class="event-detail">
+                    <h4><i class="fas fa-info-circle"></i> Additional Information</h4>
+                    <p>${detail.additionalInfo}</p>
+                </div>
+                ` : ''}
+                
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(100, 255, 218, 0.2); font-size: 0.9rem; color: var(--light);">
+                    <p><i class="fas fa-lightbulb"></i> <strong>Tip:</strong> This detailed historical analysis provides context beyond basic timelines. Historical understanding requires considering multiple perspectives and contexts.</p>
+                </div>
+            `;
+            
+            timelineModal.style.display = 'flex';
+        }
+        
+        // Toggle between light and dark mode
+        function toggleTheme() {
+            body.classList.toggle('light-mode');
+            updateThemeIcon();
+            
+            // Save preference to localStorage
+            const isLightMode = body.classList.contains('light-mode');
+            localStorage.setItem('historyTheme', isLightMode ? 'light' : 'dark');
+        }
+        
+        // Update theme toggle icon
+        function updateThemeIcon() {
+            const icon = themeToggle.querySelector('i');
+            if (body.classList.contains('light-mode')) {
+                icon.className = 'fas fa-sun';
+            } else {
+                icon.className = 'fas fa-moon';
+            }
+        }
+        
+        // Initialize the application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
